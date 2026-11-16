@@ -13,8 +13,16 @@ class Community extends Model
     public $timestamps = true;
     protected $fillable = [
         'name',
+        'slug',
         'description',
+        'banner_url',
+        'owner_id',
         'created_at',
         'updated_at',
     ];
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
 }
