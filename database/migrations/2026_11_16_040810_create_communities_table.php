@@ -18,7 +18,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('banner_url')->unique();
             $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('activity_id')->nullable()->constrained('activities')->onDelete('set null');
             $table->timestamps();
         });
     }
