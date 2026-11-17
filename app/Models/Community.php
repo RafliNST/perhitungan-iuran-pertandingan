@@ -24,4 +24,14 @@ class Community extends Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+
+    public function members()
+    {
+        return $this->hasMany(CommunityMember::class, 'community_id');
+    }
+
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'community_id');
+    }
 }

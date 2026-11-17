@@ -34,4 +34,14 @@ class Event extends Model
     {
         return $this->belongsTo(Community::class, 'community_id');
     }
+
+    public function host()
+    {
+        return $this->belongsTo(User::class, 'host_id');
+    }
+
+    public function participants()
+    {
+        return $this->hasMany(Participant::class, 'event_id');
+    }
 }
