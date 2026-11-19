@@ -3,7 +3,11 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
+use Override;
 
 class StoreCommunityRequest extends FormRequest
 {
@@ -12,7 +16,7 @@ class StoreCommunityRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return Auth::check();
     }
 
     /**
@@ -23,7 +27,27 @@ class StoreCommunityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255', 'min:1'],
+            'description' => ['nullable', 'string'],
         ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Nama komunitas harus diisi.',
+            'name.string' => 'Nama komunitas harus berupa teks.',
+            'name.max' => 'Nama komunitas tidak boleh lebih dari 255 karakter.',
+            'name.min' => 'Nama komunitas harus memiliki setidaknya 1 karakter.',
+            'description.string' => 'Deskripsi komunitas harus berupa teks.',
+        ];
+    }
+
+    #[Override]
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response([
+            "errors" => $validator->getMessageBag(),
+        ], 400));
     }
 }

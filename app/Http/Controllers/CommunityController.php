@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CommunityResource;
 use App\Models\Community;
 use App\Http\Requests\StoreCommunityRequest;
 use App\Http\Requests\UpdateCommunityRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CommunityController extends Controller
 {
@@ -29,7 +31,17 @@ class CommunityController extends Controller
      */
     public function store(StoreCommunityRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        $creator = Auth::user();
+
+        $community = Community::create([
+            'name' => $data['name'],
+            'description' => $data['description'] ?? null,
+            'creator_id' => $creator->id,
+        ]);
+
+        return(new CommunityResource($community))->response()->setStatusCode(201);
     }
 
     /**
@@ -37,7 +49,7 @@ class CommunityController extends Controller
      */
     public function show(Community $community)
     {
-        //
+        return new CommunityResource($community);
     }
 
     /**
@@ -53,7 +65,11 @@ class CommunityController extends Controller
      */
     public function update(UpdateCommunityRequest $request, Community $community)
     {
-        //
+        $data = $request->validated();
+
+        $community->update($data);
+
+        return new CommunityResource($community);
     }
 
     /**
@@ -61,6 +77,8 @@ class CommunityController extends Controller
      */
     public function destroy(Community $community)
     {
-        //
+        $community->delete();
+
+        return response()->noContent();
     }
 }
