@@ -16,6 +16,7 @@ class Community extends Model
         'name',
         'slug',
         'description',
+        'is_public',
         'banner_url',
         'owner_id',
     ];

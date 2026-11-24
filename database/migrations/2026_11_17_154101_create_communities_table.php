@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('banner_url')->nullable();
+            $table->integer('is_public')->default(1);
             $table->foreignId('owner_id')->constrained('users', 'id')->onDelete('cascade');
             $table->timestamps();
         });

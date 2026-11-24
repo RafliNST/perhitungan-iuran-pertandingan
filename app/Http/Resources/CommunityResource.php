@@ -18,7 +18,9 @@ class CommunityResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'creator_id' => $this->creator_id,
+            'slug' => $this->slug,
+            'banner_url' => $this->banner_url,
+            'creator_id' => new UserResource($this->owner),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

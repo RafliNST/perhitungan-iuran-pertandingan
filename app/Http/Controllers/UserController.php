@@ -44,7 +44,7 @@ class UserController extends Controller
         // Handle profile picture upload if provided
         if ($request->hasFile('profile_picture')) 
         {
-            $newFileName = time() . '_' . $request->file('profile_picture')->getClientOriginalName();
+            $newFileName = time() . '_' . $data['name'] . '.' . $request->file('profile_picture')->getClientOriginalExtension();
             $profilePicturePath = $request->file('profile_picture')->storeAs('profile_pictures', $newFileName, 'public');
             $data['profile_url'] = $profilePicturePath;
         }

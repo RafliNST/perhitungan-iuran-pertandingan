@@ -7,6 +7,7 @@ use App\Models\Community;
 use App\Http\Requests\StoreCommunityRequest;
 use App\Http\Requests\UpdateCommunityRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class CommunityController extends Controller
 {
@@ -15,7 +16,13 @@ class CommunityController extends Controller
      */
     public function index()
     {
-        //
+        // get public communites
+        $communities = Community::with('owner')
+            ->where('is_public', true)
+            ->latest()
+            ->get();
+        
+        return (CommunityResource::collection($communities));
     }
 
     /**
@@ -23,7 +30,7 @@ class CommunityController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -35,11 +42,16 @@ class CommunityController extends Controller
 
         $creator = Auth::user();
 
-        $community = Community::create([
-            'name' => $data['name'],
-            'description' => $data['description'] ?? null,
-            'creator_id' => $creator->id,
-        ]);
+        $data['slug'] = Str::slug($data['name']) . '-' . $creator->name;
+        $data['owner_id'] = $creator->id;
+
+        if ($request->hasFile('community_banner')) {
+            $newFileName = time() . '-' . $creator->name . '.' . $request->file('community_banner')->getClientOriginalExtension();
+            $bannerPath = $request->file('community_banner')->storeAs('community_banners', $newFileName, 'public');
+            $data['banner_url'] = $bannerPath;
+        }
+
+        $community = Community::create($data);
 
         return(new CommunityResource($community))->response()->setStatusCode(201);
     }

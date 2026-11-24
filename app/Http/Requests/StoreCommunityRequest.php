@@ -28,6 +28,7 @@ class StoreCommunityRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', 'min:1'],
+            'community_banner' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:5120'],
             'description' => ['nullable', 'string'],
         ];
     }
@@ -39,6 +40,9 @@ class StoreCommunityRequest extends FormRequest
             'name.string' => 'Nama komunitas harus berupa teks.',
             'name.max' => 'Nama komunitas tidak boleh lebih dari 255 karakter.',
             'name.min' => 'Nama komunitas harus memiliki setidaknya 1 karakter.',
+            'community_banner.image' => 'Banner komunitas harus berupa gambar.',
+            'community_banner.max' => 'Banner komunitas tidak boleh lebih dari 5MB.',
+            'community_banner.mimes' => 'Banner komunitas harus berupa file JPEG, PNG, atau JPG.',
             'description.string' => 'Deskripsi komunitas harus berupa teks.',
         ];
     }
