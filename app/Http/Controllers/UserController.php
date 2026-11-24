@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\CommunityResource;
+use App\Http\Resources\EventResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -19,8 +21,17 @@ class UserController extends Controller
      */
     public function index()
     {
-        $data = Auth::user();
-        return UserResource::collection($data);
+        $user = Auth::user();
+
+        $user->load(['communities', 'events', 'communityMemberships', 'eventsParticipations']);
+
+        return response()->json([
+            'user' => new UserResource($user),
+            'communities' => CommunityResource::collection($user->communities),
+            'events' => EventResource::collection($user->events),
+            // 'membership' => MembershipResource::collection($user->communityMemberships),
+            // 'participated_events' => EventResource::collection($user->eventsParticipations),
+        ], 200);
     }
 
     /**
@@ -75,7 +86,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+        
     }
 
     /**
@@ -106,7 +117,7 @@ class UserController extends Controller
         }
 
         $user->update($data);
-        
+
         return (new UserResource($user))
             ->response()
             ->setStatusCode(200);
