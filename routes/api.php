@@ -3,7 +3,5 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/users', [UserController::class, 'store']);
-Route::apiResource('/users', UserController::class)
-    ->except(['store'])
-    ->middleware('auth:sanctum');
+Route::post('/users', [UserController::class, 'register'])->name('users.register');
+Route::post('/login', [UserController::class, 'login'])->name('users.login');

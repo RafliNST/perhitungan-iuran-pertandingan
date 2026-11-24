@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreUserRequest extends FormRequest
 {
@@ -26,7 +28,7 @@ class StoreUserRequest extends FormRequest
             'name' => ['required', 'string', 'unique:users', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'profile_picture' => ['nullable', 'image', 'max:5120'], // Optional profile picture upload
+            'profile_picture' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:5120'], // Optional profile picture upload
         ];
     }
 
@@ -48,12 +50,13 @@ class StoreUserRequest extends FormRequest
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
             'profile_picture.image' => 'Foto profil harus berupa gambar.',
             'profile_picture.max' => 'Foto profil tidak boleh lebih dari 5MB.',
+            'profile_picture.mimes' => 'Foto profil harus berupa file JPEG, PNG, atau JPG.',
         ];
     }
 
-    public function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    public function failedValidation(Validator $validator)
     {
-        throw new \Illuminate\Http\Exceptions\HttpResponseException(response()->json([
+        throw new HttpResponseException(response()->json([
             'errors' => $validator->errors(),
         ], 422));
     }
