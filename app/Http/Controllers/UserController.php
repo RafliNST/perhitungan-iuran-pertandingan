@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
@@ -80,37 +81,32 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $user)
+
+    public function update(UpdateUserRequest $request)
     {
         $data = $request->validated();
-        $user = Auth::user();
+        $user = $request->user();
 
         // Handle profile picture upload if provided
-        if ($request->hasFile('profile_picture')) 
-        {
-            // Delete the old profile picture if it exists
-            if ($user->profile_url) {
-                $oldProfilePicturePath = public_path('storage/' . $user->profile_url);
-                if (file_exists($oldProfilePicturePath)) {
-                    unlink($oldProfilePicturePath);
-                }
+        if ($request->hasFile('profile_picture')) {
+            // Hapus foto lama dari disk public jika ada
+            if ($user->profile_url && Storage::disk('public')->exists($user->profile_url)) {
+                Storage::disk('public')->delete($user->profile_url);
             }
 
-            $newFileName = time() . '_' . $request->file('profile_picture')->getClientOriginalName();
-            $profilePicturePath = $request->file('profile_picture')->storeAs('profile_pictures', $newFileName, 'public');
-            $data['profile_url'] = $profilePicturePath;
+            $data['profile_url'] = $request->file('profile_picture')->store('profile_pictures', 'public');
         }
 
-        // Update the user with the validated data
-        if (isset($data['name'])) {
-            $user->name = $data['name'];
-        }
+        // Hapus key 'profile_picture' agar tidak ikut masuk ke query SQL
+        unset($data['profile_picture']);
 
-        // Update the user's password if provided
-        if (isset($data['password'])) {
+        // Hash password baru jika dikirim
+        if (!empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         }
 
+        $user->update($data);
+        
         return (new UserResource($user))
             ->response()
             ->setStatusCode(200);
