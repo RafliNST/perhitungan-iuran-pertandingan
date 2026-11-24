@@ -126,10 +126,11 @@ class UserController extends Controller
 
     public function logout()
     {
-        // $user = Auth::user();
-        // $user->token = null;
-        // $user->save();
+        $user = Auth::user();
+        $user->tokens()->delete();
 
-        // return response()->json(['message' => 'Logout successful'], 200);
+        return response()->json([
+            'message' => 'Berhasil logout'
+        ], 200);
     }
 }
