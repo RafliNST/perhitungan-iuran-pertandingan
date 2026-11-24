@@ -48,6 +48,6 @@ class StoreCommunityRequest extends FormRequest
     {
         throw new HttpResponseException(response([
             "errors" => $validator->getMessageBag(),
-        ], 400));
+        ], 422));
     }
 }
