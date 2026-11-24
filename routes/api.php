@@ -8,11 +8,14 @@ Route::post('/auth/register', [UserController::class, 'register'])->name('users.
 Route::post('/auth/login', [UserController::class, 'login'])->name('users.login');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/auth/logout', [UserController::class, 'logout'])->name('users.logout');
-    Route::patch('/user/update', [UserController::class, 'update'])->name('users.update');
     Route::get('/user', [UserController::class, 'index'])->name('users.index');
+    Route::post('/auth/logout', [UserController::class, 'logout'])->name('users.logout');
+    Route::patch('/user/update', [UserController::class, 'update'])->name('users.patch');
+    Route::put('/user/update', [UserController::class, 'update'])->name('users.put');
 
     Route::post('/communities', [CommunityController::class, 'store'])->name('communities.create');
+    Route::patch('/communities/{community}', [CommunityController::class, 'update'])->name('communities.patch');
+    Route::put('/communities/{community}', [CommunityController::class, 'update'])->name('communities.put');
 });
 
 Route::get('/communities', [CommunityController::class, 'index'])->name('communities.all');

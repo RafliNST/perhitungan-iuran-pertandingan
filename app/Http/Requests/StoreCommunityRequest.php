@@ -27,7 +27,7 @@ class StoreCommunityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'min:1'],
+            'name' => ['required', 'string', 'max:255', 'min:1', 'unique:communities'],
             'community_banner' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:5120'],
             'description' => ['nullable', 'string'],
         ];
@@ -37,6 +37,7 @@ class StoreCommunityRequest extends FormRequest
     {
         return [
             'name.required' => 'Nama komunitas harus diisi.',
+            'name.unique' => 'Nama komuntas sudah digunakan.',
             'name.string' => 'Nama komunitas harus berupa teks.',
             'name.max' => 'Nama komunitas tidak boleh lebih dari 255 karakter.',
             'name.min' => 'Nama komunitas harus memiliki setidaknya 1 karakter.',

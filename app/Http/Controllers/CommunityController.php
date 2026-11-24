@@ -7,6 +7,7 @@ use App\Models\Community;
 use App\Http\Requests\StoreCommunityRequest;
 use App\Http\Requests\UpdateCommunityRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CommunityController extends Controller
@@ -39,21 +40,25 @@ class CommunityController extends Controller
     public function store(StoreCommunityRequest $request)
     {
         $data = $request->validated();
+        $creator = $request->user();
 
-        $creator = Auth::user();
-
-        $data['slug'] = Str::slug($data['name']) . '-' . $creator->name;
+        // Gunakan Str::slug agar URL bersih dari spasi/huruf kapital & tetap unik
+        $data['slug'] = Str::slug($data['name'] . '-' . $creator->name);
         $data['owner_id'] = $creator->id;
 
         if ($request->hasFile('community_banner')) {
-            $newFileName = time() . '-' . $creator->name . '.' . $request->file('community_banner')->getClientOriginalExtension();
-            $bannerPath = $request->file('community_banner')->storeAs('community_banners', $newFileName, 'public');
-            $data['banner_url'] = $bannerPath;
+            $banner_url = $request->file('community_banner')->store('community_banners', 'public');    
+            $data['banner_url'] = $banner_url;
         }
 
-        $community = Community::create($data);
+        unset($data['community_banner']);
 
-        return(new CommunityResource($community))->response()->setStatusCode(201);
+        $community = Community::create($data);
+        $community->load('owner');
+
+        return (new CommunityResource($community))
+            ->response()
+            ->setStatusCode(201);
     }
 
     /**
@@ -78,9 +83,23 @@ class CommunityController extends Controller
     public function update(UpdateCommunityRequest $request, Community $community)
     {
         $data = $request->validated();
+        $creator = Auth::user();
+
+        if ($request->hasFile('community_banner')) {
+            if ($community->banner_url && Storage::disk('public')->exists($community->banner_url)) {
+                Storage::disk('public')->delete($community->banner_url);
+            }
+
+            $data['banner_url'] = $request->file('community_banner')->store('community_banners', 'public');
+        }
+
+        unset($data['community_banner']);
+        
+        if (!empty($data['name'])) {
+            $data['slug'] = Str::slug($data['name'] . '-' . $creator->name);
+        }
 
         $community->update($data);
-
         return new CommunityResource($community);
     }
 

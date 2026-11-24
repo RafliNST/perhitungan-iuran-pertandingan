@@ -44,10 +44,10 @@ class UserController extends Controller
         // Handle profile picture upload if provided
         if ($request->hasFile('profile_picture')) 
         {
-            $newFileName = time() . '_' . $data['name'] . '.' . $request->file('profile_picture')->getClientOriginalExtension();
-            $profilePicturePath = $request->file('profile_picture')->storeAs('profile_pictures', $newFileName, 'public');
+            $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
             $data['profile_url'] = $profilePicturePath;
         }
+        unset($data['profile_picture']);
 
         $data['password'] = Hash::make($data['password']);
 
@@ -96,7 +96,7 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request)
     {
         $data = $request->validated();
-        $user = $request->user();
+        $user = Auth::user();
 
         // Handle profile picture upload if provided
         if ($request->hasFile('profile_picture')) {

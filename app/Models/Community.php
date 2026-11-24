@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Override;
 
 class Community extends Model
 {
@@ -20,6 +21,18 @@ class Community extends Model
         'banner_url',
         'owner_id',
     ];
+
+    protected function casts() {
+        return [
+            'is_public' => 'boolean'
+        ];
+    }
+
+    #[Override]
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function owner()
     {
