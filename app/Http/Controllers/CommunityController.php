@@ -60,9 +60,7 @@ class CommunityController extends Controller
         $community = Community::create($data);
         $community->load('owner');
 
-        return (new CommunityResource($community))
-            ->response()
-            ->setStatusCode(201);
+        return (new CommunityResource($community));
     }
 
     /**
@@ -72,9 +70,7 @@ class CommunityController extends Controller
     {
         $community->load(['owner', 'members']);
 
-        return (new CommunityResource($community))
-            ->response()
-            ->setStatusCode(200);
+        return (new CommunityResource($community));
     }
 
     /**

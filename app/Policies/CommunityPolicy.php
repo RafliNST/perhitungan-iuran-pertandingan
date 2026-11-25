@@ -31,6 +31,11 @@ class CommunityPolicy
         return false;
     }
 
+    public function join(User $user, Community $community): bool
+    {
+        return (int)$user->id !== (int)$community->owner_id;
+    }
+
     /**
      * Determine whether the user can update the model.
      */

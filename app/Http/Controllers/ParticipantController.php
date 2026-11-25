@@ -4,63 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Participant;
 use App\Http\Requests\StoreParticipantRequest;
-use App\Http\Requests\UpdateParticipantRequest;
+use App\Http\Resources\ParticipantResource;
+use App\Models\Event;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ParticipantController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreParticipantRequest $request)
     {
-        //
-    }
+        $data = $request->validated();
+        $event = Event::findOrFail($data['event_id']);
+        $targetUserId = $data['user_id'] ?? Auth::id();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Participant $participant)
-    {
-        //
-    }
+        // Memvalidasi status event (tidak completed/cancelled), bukan host, dan anggota komunitas
+        Gate::authorize('apply', [$event, $targetUserId]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Participant $participant)
-    {
-        //
-    }
+        $participant = Participant::create([
+            'event_id' => $event->id,
+            'user_id'  => $targetUserId,
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateParticipantRequest $request, Participant $participant)
-    {
-        //
-    }
+        $participant->load('user');
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Participant $participant)
-    {
-        //
+        return new ParticipantResource($participant);
     }
 }

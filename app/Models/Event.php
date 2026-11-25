@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enum\EventStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Override;
 
 class Event extends Model
 {
@@ -33,6 +34,20 @@ class Event extends Model
         'end_time' => 'datetime',
         'status' => EventStatus::class,
     ];
+
+    #[Override]
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
+    public function isOpenForRegistration(): bool
+    {
+        return ! in_array($this->status, [
+            EventStatus::COMPLETED,
+            EventStatus::CANCELLED,
+        ], true);
+    }
 
     public function community()
     {

@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
+use App\Enum\EventStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateEventRequest extends FormRequest
 {
@@ -12,7 +13,7 @@ class UpdateEventRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +24,12 @@ class UpdateEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name'        => ['sometimes', 'required', 'string', 'max:255'],
+            'description' => ['sometimes', 'nullable', 'string'],
+            'location'    => ['sometimes', 'required', 'string', 'max:255'],
+            'start_time'  => ['sometimes', 'required', 'date'],
+            'end_time'    => ['sometimes', 'nullable', 'date', 'after:start_time'],
+            'status'      => ['sometimes', 'required', Rule::enum(EventStatus::class)],
         ];
     }
 }

@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\CommunityMember;
 use App\Http\Requests\StoreCommunityMemberRequest;
 use App\Http\Requests\UpdateCommunityMemberRequest;
+use App\Http\Resources\CommunityMemberResource;
+use App\Models\Community;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class CommunityMemberController extends Controller
 {
@@ -29,7 +34,22 @@ class CommunityMemberController extends Controller
      */
     public function store(StoreCommunityMemberRequest $request)
     {
-        //
+        $data = $request->validated();
+        $community = Community::findOrFail($data['community_id']);
+        
+        $targetUserId = $data['user_id'] ?? Auth::id();
+
+        // Kirim $targetUserId ke CommunityPolicy@join
+        Gate::authorize('join', [$community, $targetUserId]);
+
+        $community_member = CommunityMember::create([
+            'community_id' => $community->id,
+            'user_id'      => $targetUserId,
+        ]);
+
+        $community_member->load(['user', 'community']);
+
+        return new CommunityMemberResource($community_member);
     }
 
     /**
@@ -61,6 +81,24 @@ class CommunityMemberController extends Controller
      */
     public function destroy(CommunityMember $communityMember)
     {
-        //
+        // Otomatis melempar 403 Forbidden jika bukan member ybs atau owner komunitas
+        Gate::authorize('delete', $communityMember);
+
+        $communityMember->delete();
+
+        return response()->noContent(); // 204 No Content
+    }
+
+    public function destroyByUser(Community $community, User $user)
+    {
+        $communityMember = CommunityMember::where('community_id', $community->id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        Gate::authorize('delete', $communityMember);
+
+        $communityMember->delete();
+
+        return response()->noContent();
     }
 }
