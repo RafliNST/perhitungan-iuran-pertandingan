@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ItemExpense extends Model
 {
+    use HasFactory;
+    
     protected $table = 'item_expenses';
     protected $primaryKey = ['item_id', 'user_id', 'event_id'];
     public $incrementing = false;

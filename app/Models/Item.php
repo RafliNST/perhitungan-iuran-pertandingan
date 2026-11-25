@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Enum\ItemDistributionType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Item extends Model
 {
+    use HasFactory;
+    
     protected $table = 'items';
     protected $primaryKey = 'id';
     protected $keyType = 'int';
