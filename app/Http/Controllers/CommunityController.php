@@ -6,8 +6,9 @@ use App\Http\Resources\CommunityResource;
 use App\Models\Community;
 use App\Http\Requests\StoreCommunityRequest;
 use App\Http\Requests\UpdateCommunityRequest;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -86,6 +87,8 @@ class CommunityController extends Controller
      */
     public function update(UpdateCommunityRequest $request, Community $community)
     {
+        Gate::authorize('update', $community);
+        
         $data = $request->validated();
         $creator = Auth::user();
 
@@ -112,6 +115,8 @@ class CommunityController extends Controller
      */
     public function destroy(Community $community)
     {
+        Gate::authorize('delete', $community);
+        
         $community->delete();
 
         return response()->noContent();
