@@ -17,10 +17,11 @@ class CommunityResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'description' => $this->description,
             'slug' => $this->slug,
+            'description' => $this->description,
             'banner_url' => $this->banner_url,
-            'creator_id' => new UserResource($this->owner),
+            'creator' => new UserResource($this->whenLoaded('owner')),
+            'members' => UserResource::collection($this->whenLoaded('members')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

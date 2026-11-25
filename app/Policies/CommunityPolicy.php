@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Community;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class CommunityPolicy
 {
@@ -45,7 +44,7 @@ class CommunityPolicy
      */
     public function delete(User $user, Community $community): bool
     {
-        return $user->id === $community->owner_id;
+        return (int) $user->id === (int) $community->owner_id;
     }
 
     /**

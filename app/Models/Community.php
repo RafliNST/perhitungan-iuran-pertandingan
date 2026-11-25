@@ -44,7 +44,7 @@ class Community extends Model
 
     public function members()
     {
-        return $this->hasMany(CommunityMember::class, 'community_id');
+        return $this->belongsToMany(User::class, 'community_members', 'community_id', 'user_id');
     }
 
     public function events()

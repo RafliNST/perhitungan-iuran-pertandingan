@@ -13,7 +13,7 @@ class CommunityMemberController extends Controller
      */
     public function index()
     {
-        //
+        
     }
 
     /**

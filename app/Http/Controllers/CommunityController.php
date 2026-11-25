@@ -6,7 +6,6 @@ use App\Http\Resources\CommunityResource;
 use App\Models\Community;
 use App\Http\Requests\StoreCommunityRequest;
 use App\Http\Requests\UpdateCommunityRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -71,7 +70,11 @@ class CommunityController extends Controller
      */
     public function show(Community $community)
     {
-        return new CommunityResource($community);
+        $community->load(['owner', 'members']);
+
+        return (new CommunityResource($community))
+            ->response()
+            ->setStatusCode(200);
     }
 
     /**
@@ -88,7 +91,7 @@ class CommunityController extends Controller
     public function update(UpdateCommunityRequest $request, Community $community)
     {
         Gate::authorize('update', $community);
-        
+
         $data = $request->validated();
         $creator = Auth::user();
 
