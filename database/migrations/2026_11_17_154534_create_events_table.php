@@ -20,8 +20,16 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->dateTime('start_time');
             $table->dateTime('end_time')->nullable();
-            $table->foreignId('community_id')->constrained('communities', 'id')->onDelete('cascade');
-            $table->foreignId('host_id')->constrained('users', 'id')->onDelete('cascade');
+            
+            $table->foreignId('community_id')
+                ->nullable()
+                ->constrained('communities')
+                ->nullOnDelete();
+
+            $table->foreignId('host_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
             $table->string('status')->default(EventStatus::PLANNED->value);
             $table->timestamps();
         });

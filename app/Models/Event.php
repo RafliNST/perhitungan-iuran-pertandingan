@@ -24,6 +24,7 @@ class Event extends Model
         'start_time',
         'end_time',
         'community_id',
+        'host_id',
         'status',
     ];
 

@@ -6,6 +6,7 @@ use App\Http\Resources\CommunityResource;
 use App\Models\Community;
 use App\Http\Requests\StoreCommunityRequest;
 use App\Http\Requests\UpdateCommunityRequest;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -23,7 +24,10 @@ class CommunityController extends Controller
             ->latest()
             ->get();
         
-        return (CommunityResource::collection($communities));
+        return (CommunityResource::collection($communities))
+            ->additional([
+                "message" => 'Sukses mengambil semua komunitas publik.'
+            ]);
     }
 
     /**
