@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,7 +12,7 @@ class Participant extends Model
     
     protected $table = 'participants';
     protected $primaryKey = ['event_id', 'user_id'];
-    public $incrementing = false;
+    public $incrementing = true;
     public $timestamps = true;
 
     protected $fillable = [
@@ -22,8 +23,9 @@ class Participant extends Model
     ];
 
     protected $casts = [
-        'payment_status' => \App\Enum\PaymentStatus::class,
+        'payment_status' => PaymentStatus::class,
         'fee_total' => 'decimal:2',
+        'attended_at' => 'datetime',
     ];
 
     public function event()

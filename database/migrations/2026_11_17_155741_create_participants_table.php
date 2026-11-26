@@ -13,12 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('participants', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('event_id')->constrained('events', 'id')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users', 'id')->onDelete('cascade');
-            $table->primary(['event_id', 'user_id']);
             $table->string('payment_status')->default(PaymentStatus::PENDING->value);
             $table->decimal('fee_total', 12, 2)->default(0);
             $table->timestamps();
+            
+            $table->unique(['event_id', 'user_id']);
         });
     }
 
