@@ -10,8 +10,8 @@ class Game extends Model
     use HasFactory;
     
     protected $table = 'games';
-    protected $primaryKey = ['team_id', 'event_id', 'community_id', 'user_id'];
-    public $incrementing = false;
+    protected $primaryKey = 'id';
+    public $incrementing = true;
     public $timestamps = true;
 
     protected $fillable = [

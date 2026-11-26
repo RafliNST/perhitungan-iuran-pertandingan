@@ -63,4 +63,14 @@ class Event extends Model
     {
         return $this->hasMany(Participant::class, 'event_id');
     }
+
+    public function items()
+    {
+        return $this->hasMany(Item::class, 'event_id');
+    }
+
+    public function games()
+    {
+        return $this->hasMany(Game::class, 'event_id');
+    }
 }

@@ -10,8 +10,8 @@ class CommunityMember extends Model
     use HasFactory;
     
     protected $table = 'community_members';
-    protected $primaryKey = ['community_id', 'user_id'];
-    public $incrementing = false;
+    protected $primaryKey = 'id';
+    public $incrementing = true;
     public $timestamps = true;
 
     protected $fillable = [

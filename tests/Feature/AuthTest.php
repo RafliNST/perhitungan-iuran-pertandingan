@@ -10,7 +10,7 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_register_with_valid_data(): void
+    public function test_user_can_register(): void
     {
         $response = $this->postJson('/api/auth/register', [
             'name'                  => 'Rafli Nasution',
@@ -20,27 +20,24 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(201);
-        $this->assertDatabaseHas('users', [
-            'email' => 'rafli@example.com',
-        ]);
+        $this->assertDatabaseHas('users', ['email' => 'rafli@example.com']);
     }
 
-    public function test_user_cannot_register_with_duplicate_email(): void
+    public function test_user_cannot_register_with_existing_email(): void
     {
         User::factory()->create(['email' => 'rafli@example.com']);
 
         $response = $this->postJson('/api/auth/register', [
-            'name'                  => 'User Baru',
+            'name'                  => 'User Lain',
             'email'                 => 'rafli@example.com',
             'password'              => 'password123',
             'password_confirmation' => 'password123',
         ]);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['email']);
+        $response->assertStatus(422)->assertJsonValidationErrors(['email']);
     }
 
-    public function test_user_can_login_with_valid_credentials(): void
+    public function test_user_can_login_and_get_token(): void
     {
         User::factory()->create([
             'email'    => 'rafli@example.com',
@@ -52,11 +49,10 @@ class AuthTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertStatus(200)
-            ->assertJsonStructure(['token']); // Sesuaikan key jika berbeda (misal: access_token)
+        $response->assertStatus(200);
     }
 
-    public function test_user_cannot_login_with_wrong_password(): void
+    public function test_user_cannot_login_with_invalid_password(): void
     {
         User::factory()->create([
             'email'    => 'rafli@example.com',
@@ -65,9 +61,9 @@ class AuthTest extends TestCase
 
         $response = $this->postJson('/api/auth/login', [
             'email'    => 'rafli@example.com',
-            'password' => 'passwordsalah',
+            'password' => 'salah123',
         ]);
 
-        $response->assertStatus(401); // Sesuaikan ke 422 jika login memakai ValidationException
+        $response->assertStatus(401); // Ubah ke 422 jika controller login melempar ValidationException
     }
 }

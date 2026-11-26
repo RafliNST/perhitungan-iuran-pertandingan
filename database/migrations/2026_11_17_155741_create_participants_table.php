@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('event_id')->constrained('events', 'id')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users', 'id')->onDelete('cascade');
             $table->string('payment_status')->default(PaymentStatus::PENDING->value);
+            $table->dateTime('attended_at')->nullable();
             $table->decimal('fee_total', 12, 2)->default(0);
             $table->timestamps();
             

@@ -3,6 +3,9 @@
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\CommunityMemberController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\ItemExpenseController;
 use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -36,4 +39,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
 
     Route::post('/participants', [ParticipantController::class, 'store'])->name('participants.store');
+
+    // Games
+    Route::get('/events/{event}/games', [GameController::class, 'index']);
+    Route::post('/games', [GameController::class, 'store']);
+    Route::delete('/games/{game}', [GameController::class, 'destroy']);
+
+    // Items
+    Route::get('/events/{event}/items', [ItemController::class, 'index']);
+    Route::post('/items', [ItemController::class, 'store']);
+    Route::match(['put', 'patch'], '/items/{item}', [ItemController::class, 'update']);
+    Route::delete('/items/{item}', [ItemController::class, 'destroy']);
+
+    // Item Expenses
+    Route::post('/item-expenses', [ItemExpenseController::class, 'store']);
+    Route::match(['put', 'patch'], '/item-expenses/{itemExpense}', [ItemExpenseController::class, 'update']);
+    Route::delete('/item-expenses/{itemExpense}', [ItemExpenseController::class, 'destroy']);
 });

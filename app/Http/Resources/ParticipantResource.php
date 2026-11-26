@@ -15,12 +15,16 @@ class ParticipantResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
-            'event_id'    => $this->event_id,
-            'user_id'     => $this->user_id,
-            'attended_at' => $this->attended_at,
-            'user'        => new UserResource($this->whenLoaded('user')),
-            'created_at'  => $this->created_at,
+            'id'             => $this->id,
+            'event_id'       => (int) $this->event_id,
+            'user_id'        => (int) $this->user_id,
+            'payment_status' => $this->payment_status?->value,
+            'fee_total'      => (float) $this->fee_total,
+            'attended_at'    => $this->attended_at,
+            'user'           => new UserResource($this->whenLoaded('user')),
+            'event'          => new EventResource($this->whenLoaded('event')),
+            'created_at'     => $this->created_at,
+            'updated_at'     => $this->updated_at,
         ];
     }
 }

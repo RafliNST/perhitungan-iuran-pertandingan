@@ -29,4 +29,9 @@ class Item extends Model
     {
         return $this->belongsTo(Event::class, 'event_id');
     }
+
+    public function expenses()
+    {
+        return $this->hasMany(ItemExpense::class, 'item_id');
+    }
 }

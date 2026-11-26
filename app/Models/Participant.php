@@ -11,7 +11,7 @@ class Participant extends Model
     use HasFactory;
     
     protected $table = 'participants';
-    protected $primaryKey = ['event_id', 'user_id'];
+    protected $primaryKey = 'id';
     public $incrementing = true;
     public $timestamps = true;
 
@@ -20,6 +20,7 @@ class Participant extends Model
         'user_id',
         'payment_status',
         'fee_total',
+        'attended_at'
     ];
 
     protected $casts = [

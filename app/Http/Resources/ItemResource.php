@@ -14,6 +14,15 @@ class ItemResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id'                => $this->id,
+            'event_id'          => (int) $this->event_id,
+            'name'              => $this->name,
+            'price'             => (float) $this->price,
+            'distribution_type' => $this->distribution_type?->value,
+            'expenses'          => ItemExpenseResource::collection($this->whenLoaded('expenses')),
+            'created_at'        => $this->created_at,
+            'updated_at'        => $this->updated_at,
+        ];
     }
 }

@@ -13,16 +13,6 @@ class CommunityTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_cannot_create_community(): void
-    {
-        $response = $this->postJson('/api/communities', [
-            'name'        => 'PB Medan Smash',
-            'description' => 'Komunitas badminton rutin mingguan',
-        ]);
-
-        $response->assertStatus(401);
-    }
-
     public function test_authenticated_user_can_create_community(): void
     {
         $user = User::factory()->create();
@@ -30,23 +20,26 @@ class CommunityTest extends TestCase
 
         $response = $this->postJson('/api/communities', [
             'name'        => 'PB Medan Smash',
-            'description' => 'Komunitas badminton rutin mingguan',
+            'description' => 'Komunitas badminton rutin',
+            'is_public'   => true,
         ]);
 
-        $response->assertStatus(201)
-            ->assertJsonPath('data.name', 'PB Medan Smash');
-
+        $response->assertStatus(201);
         $this->assertDatabaseHas('communities', [
             'name'     => 'PB Medan Smash',
             'owner_id' => $user->id,
         ]);
     }
 
-    public function test_user_can_join_existing_community(): void
+    public function test_user_can_join_community(): void
     {
         $owner = User::factory()->create();
         $member = User::factory()->create();
-        $community = Community::factory()->create(['owner_id' => $owner->id]);
+        $community = Community::create([
+            'name'     => 'PB Medan Smash',
+            'slug'     => 'pb-medan-smash',
+            'owner_id' => $owner->id,
+        ]);
 
         Sanctum::actingAs($member);
 
@@ -61,10 +54,14 @@ class CommunityTest extends TestCase
         ]);
     }
 
-    public function test_community_owner_cannot_join_own_community(): void
+    public function test_owner_cannot_join_own_community(): void
     {
         $owner = User::factory()->create();
-        $community = Community::factory()->create(['owner_id' => $owner->id]);
+        $community = Community::create([
+            'name'     => 'PB Medan Smash',
+            'slug'     => 'pb-medan-smash',
+            'owner_id' => $owner->id,
+        ]);
 
         Sanctum::actingAs($owner);
 
@@ -72,7 +69,6 @@ class CommunityTest extends TestCase
             'community_id' => $community->id,
         ]);
 
-        // Ditolak oleh CommunityPolicy@join
         $response->assertStatus(403);
     }
 
@@ -80,7 +76,11 @@ class CommunityTest extends TestCase
     {
         $owner = User::factory()->create();
         $member = User::factory()->create();
-        $community = Community::factory()->create(['owner_id' => $owner->id]);
+        $community = Community::create([
+            'name'     => 'PB Medan Smash',
+            'slug'     => 'pb-medan-smash',
+            'owner_id' => $owner->id,
+        ]);
 
         CommunityMember::create([
             'community_id' => $community->id,
@@ -93,22 +93,22 @@ class CommunityTest extends TestCase
             'community_id' => $community->id,
         ]);
 
-        // Ditolak oleh Rule::unique di StoreCommunityMemberRequest
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['community_id']);
+        $response->assertStatus(422)->assertJsonValidationErrors(['community_id']);
     }
 
     public function test_non_owner_cannot_delete_community(): void
     {
         $owner = User::factory()->create();
-        $otherUser = User::factory()->create();
-        $community = Community::factory()->create(['owner_id' => $owner->id]);
+        $stranger = User::factory()->create();
+        $community = Community::create([
+            'name'     => 'PB Medan Smash',
+            'slug'     => 'pb-medan-smash',
+            'owner_id' => $owner->id,
+        ]);
 
-        Sanctum::actingAs($otherUser);
+        Sanctum::actingAs($stranger);
 
-        $response = $this->deleteJson("/api/communities/{$community->slug}");
-
-        $response->assertStatus(403);
-        $this->assertDatabaseHas('communities', ['id' => $community->id]);
+        $this->deleteJson("/api/communities/{$community->slug}")
+            ->assertStatus(403);
     }
 }

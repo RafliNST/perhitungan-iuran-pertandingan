@@ -10,8 +10,8 @@ class ItemExpense extends Model
     use HasFactory;
     
     protected $table = 'item_expenses';
-    protected $primaryKey = ['item_id', 'user_id', 'event_id'];
-    public $incrementing = false;
+    protected $primaryKey = 'id';
+    public $incrementing = true;
     public $timestamps = true;
 
     protected $fillable = [

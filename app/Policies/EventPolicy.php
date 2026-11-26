@@ -64,4 +64,10 @@ class EventPolicy
 
         return true;
     }
+
+    public function manageDetails(User $user, Event $event): bool
+    {
+        return (int) $user->id === (int) $event->host_id
+            && $event->status !== EventStatus::CANCELLED;
+    }
 }
